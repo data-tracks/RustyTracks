@@ -3,4 +3,11 @@ name = "RustyTrack"
 version = "0.1.0"
 edition = "2024"
 
+[lib]
+name = "RustyTrack"
+
+[dependencies.schemas]
+git = "https://github.com/data-tracks/TrackRails.git"
+branch = "generated"
+
 [dependencies]
