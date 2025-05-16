@@ -11,3 +11,5 @@ git = "https://github.com/data-tracks/TrackRails.git"
 branch = "generated"
 
 [dependencies]
+flatbuffers = "25.2.10"
+tracing = "0.1.41"
