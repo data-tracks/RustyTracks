@@ -1,8 +1,8 @@
+use flatbuffers::FlatBufferBuilder;
+use schemas::message_generated::protocol::{Message, MessageArgs, Payload, Register, RegisterArgs, String as Text, StringArgs, StringBuilder, Time, TimeArgs, Train, TrainArgs, Value, ValueUnionTableOffset, ValueWrapper, ValueWrapperArgs, ValueWrapperBuilder};
 use std::io::{Read, Write};
-use schemas::message_generated::protocol::{String as Text, Message, MessageArgs, Payload, Register, RegisterArgs, StringBuilder, Time, TimeArgs, Train, TrainArgs, ValueWrapper, ValueWrapperArgs, StringArgs, Value, ValueUnionTableOffset, ValueWrapperBuilder};
 use std::net::TcpStream;
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
-use flatbuffers::FlatBufferBuilder;
 use tracing::{error, info};
 
 struct Connection {
@@ -26,8 +26,18 @@ impl Connection {
         Ok(connection)
     }
 
-    pub(crate) fn send(&mut self, msg: &str) {
+    pub(crate) fn send(&mut self, msg: &str) -> Result<(), String> {
+        let msg = self.msg(msg);
+        self.write_all(&msg)
+    }
 
+    fn write_all<'a>(&'a mut self, msg: &'a [u8]) -> Result<(), String> {
+        let length = (msg.len() as u32).to_be_bytes();
+        // we write length first
+        self.stream.write_all(&length).map_err(|e| e.to_string())?;
+        // then msg
+        self.stream.write_all(msg).map_err(|e| e.to_string())?;
+        Ok(())
     }
 
     fn connect(&mut self) -> Result<(), String> {
@@ -38,11 +48,13 @@ impl Connection {
         builder.finish(msg, None);
         let msg = builder.finished_data().to_vec();
 
-        let code = self.stream.write(&msg).map_err(|e| e.to_string())?;
+
+        let code = self.write_all(&msg).map_err(|e| e.to_string())?;
         match code {
-            200 => info!("Connected successfully"),
-            _ => error!("Error writing to stream {}", code),
+            () => info!("Connected successfully"),
+            _ => error!("Error writing to stream"),
         }
+
         let mut buf = [0u8; 4];
         self.stream.read_exact(&mut buf).map_err(|e| e.to_string())?;
 
@@ -120,7 +132,7 @@ mod tests{
     fn test_send_values(){
         let client = Client::new("localhost", 9999);
         let mut connection = client.connect().unwrap();
-        connection.send("Hello world");
+        connection.send("Hello world").unwrap();
     }
 }
 
