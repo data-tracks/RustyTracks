@@ -2,7 +2,7 @@ use flatbuffers::FlatBufferBuilder;
 use schemas::message_generated::protocol::{Message, MessageArgs, Payload, Register, RegisterArgs, String as Text, StringArgs, StringBuilder, Time, TimeArgs, Train, TrainArgs, Value, ValueUnionTableOffset, ValueWrapper, ValueWrapperArgs, ValueWrapperBuilder};
 use std::io::{Read, Write};
 use std::net::TcpStream;
-use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
+use std::time::{SystemTime, UNIX_EPOCH};
 use tracing::{error, info};
 
 struct Connection {
@@ -31,6 +31,10 @@ impl Connection {
         self.write_all(&msg)
     }
 
+    pub(crate) fn receive(&mut self) -> Result<String, String> {
+        self.read()
+    }
+
     fn write_all<'a>(&'a mut self, msg: &'a [u8]) -> Result<(), String> {
         let length = (msg.len() as u32).to_be_bytes();
         // we write length first
@@ -55,6 +59,13 @@ impl Connection {
             _ => error!("Error writing to stream"),
         }
 
+
+        let msg = self.read()?;
+        println!("{:?}", msg);
+        Ok(())
+    }
+
+    fn read(&mut self) -> Result<String, String> {
         let mut buf = [0u8; 4];
         self.stream.read_exact(&mut buf).map_err(|e| e.to_string())?;
 
@@ -63,8 +74,7 @@ impl Connection {
         let mut buffer = vec![0u8; length];
         self.stream.read_exact(&mut buffer).map_err(|err| err.to_string())?;
         let msg = flatbuffers::root::<Message>(&buffer).map_err(|e| e.to_string())?;
-        println!("{:?}", msg);
-        Ok(())
+        Ok(format!("{:?}", msg))
     }
 
     fn msg(&mut self, msg: &str) -> Vec<u8> {
@@ -133,6 +143,17 @@ mod tests{
         let client = Client::new("localhost", 9999);
         let mut connection = client.connect().unwrap();
         connection.send("Hello world").unwrap();
+    }
+    
+    #[test]
+    fn test_receive_values(){
+        let client = Client::new("localhost", 8686);
+        let mut connection = client.connect().unwrap();
+       
+        for _ in 0..10{
+            let value = connection.receive().unwrap();
+            println!("{}", value);
+        }
     }
 }
 
