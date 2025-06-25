@@ -1,11 +1,14 @@
+mod test;
+
 use flatbuffers::FlatBufferBuilder;
-use schemas::message_generated::protocol::{Message, MessageArgs, Payload, Register, RegisterArgs, String as Text, StringArgs, StringBuilder, Time, TimeArgs, Train, TrainArgs, Value, ValueUnionTableOffset, ValueWrapper, ValueWrapperArgs, ValueWrapperBuilder};
+use schemas::message_generated::protocol::{Message, MessageArgs, Payload, RegisterRequest, RegisterRequestArgs, Status, StatusArgs, Text, TextArgs, Time, TimeArgs, Train, TrainArgs, Value, ValueWrapper, ValueWrapperArgs};
 use std::io::{Read, Write};
 use std::net::TcpStream;
 use std::time::{SystemTime, UNIX_EPOCH};
 use tracing::{error, info};
+use tracing::field::debug;
 
-struct Connection {
+pub struct Connection {
     host: String,
     port: u16,
     stream: TcpStream,
@@ -36,9 +39,10 @@ impl Connection {
     }
 
     fn write_all<'a>(&'a mut self, msg: &'a [u8]) -> Result<(), String> {
-        let length = (msg.len() as u32).to_be_bytes();
+        let length: [u8; 4] = (msg.len() as u32).to_be_bytes();
         // we write length first
         self.stream.write_all(&length).map_err(|e| e.to_string())?;
+        println!("sending {} bytes", msg.len());
         // then msg
         self.stream.write_all(msg).map_err(|e| e.to_string())?;
         Ok(())
@@ -46,8 +50,12 @@ impl Connection {
 
     fn connect(&mut self) -> Result<(), String> {
         let mut builder = FlatBufferBuilder::new();
-        let register = Register::create(&mut builder, &RegisterArgs { id: None, catalog: None, ..Default::default() }).as_union_value();
-        let msg = Message::create(&mut builder, &MessageArgs{ data_type: Payload::Register, data: Some(register), status: None }).as_union_value();
+        let register = RegisterRequest::create(&mut builder, &RegisterRequestArgs { id: None, catalog: None }).as_union_value();
+
+        let status = builder.create_string("");
+        let status = Status::create(&mut builder, &StatusArgs{ msg: Some(status) });
+        
+        let msg = Message::create(&mut builder, &MessageArgs{ data_type: Payload::RegisterRequest, data: Some(register), status: Some(status) });
 
         builder.finish(msg, None);
         let msg = builder.finished_data().to_vec();
@@ -84,15 +92,15 @@ impl Connection {
             .duration_since(UNIX_EPOCH)
             .expect("Time went backwards")
             .as_millis();
-        let time = Time::create(&mut builder, &TimeArgs{data: millis as u64 });
+        let time = Time::create(&mut builder, &TimeArgs{data: millis as u64 as i64 });
 
         let topic = builder.create_string("");
 
         let value = builder.create_string(msg );
-        let value = Text::create(&mut builder, &StringArgs{ data: Some(value) }).as_union_value();
+        let value = Text::create(&mut builder, &TextArgs{ data: Some(value) }).as_union_value();
 
 
-        let value = ValueWrapper::create(&mut builder, &ValueWrapperArgs{ data_type: Value::String, data: Some(value)});
+        let value = ValueWrapper::create(&mut builder, &ValueWrapperArgs{ data_type: Value::Text, data: Some(value)});
 
         let values = builder.create_vector(&[value]);
 
@@ -111,49 +119,20 @@ impl Connection {
 }
 
 
-struct Client{
+pub struct Client{
     host: String,
     port: u16,
 }
 
 
 impl Client {
-    fn new(host: &str, port: u16) -> Self {
+    pub fn new(host: &str, port: u16) -> Self {
         Client{ host: host.to_string(), port }
     }
 
-    fn connect(&self) -> Result<Connection, String> {
+    pub fn connect(&self) -> Result<Connection, String> {
         let stream = TcpStream::connect((self.host.clone(), self.port)).unwrap();
         Connection::new(&self.host, self.port, stream)
-    }
-}
-
-#[cfg(test)]
-mod tests{
-    use crate::Client;
-
-    #[test]
-    fn test_connect(){
-        let client = Client::new("localhost", 5959);
-        let connection = client.connect().unwrap();
-    }
-
-    #[test]
-    fn test_send_values(){
-        let client = Client::new("localhost", 9999);
-        let mut connection = client.connect().unwrap();
-        connection.send("Hello world").unwrap();
-    }
-    
-    #[test]
-    fn test_receive_values(){
-        let client = Client::new("localhost", 8686);
-        let mut connection = client.connect().unwrap();
-       
-        for _ in 0..10{
-            let value = connection.receive().unwrap();
-            println!("{}", value);
-        }
     }
 }
 
