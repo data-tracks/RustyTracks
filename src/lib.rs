@@ -1,12 +1,11 @@
 mod test;
 
 use flatbuffers::FlatBufferBuilder;
-use schemas::message_generated::protocol::{Message, MessageArgs, Payload, RegisterRequest, RegisterRequestArgs, Status, StatusArgs, Text, TextArgs, Time, TimeArgs, Train, TrainArgs, Value, ValueWrapper, ValueWrapperArgs};
+use schemas::message_generated::protocol::{Message, MessageArgs, OkStatus, OkStatusArgs, Payload, RegisterRequest, RegisterRequestArgs, Status, Text, TextArgs, Time, TimeArgs, Train, TrainArgs, Value, ValueWrapper, ValueWrapperArgs};
 use std::io::{Read, Write};
 use std::net::TcpStream;
 use std::time::{SystemTime, UNIX_EPOCH};
 use tracing::{error, info};
-use tracing::field::debug;
 
 pub struct Connection {
     host: String,
@@ -52,10 +51,9 @@ impl Connection {
         let mut builder = FlatBufferBuilder::new();
         let register = RegisterRequest::create(&mut builder, &RegisterRequestArgs { id: None, catalog: None }).as_union_value();
 
-        let status = builder.create_string("");
-        let status = Status::create(&mut builder, &StatusArgs{ msg: Some(status) });
+        let status = OkStatus::create(&mut builder, &OkStatusArgs{}).as_union_value();
         
-        let msg = Message::create(&mut builder, &MessageArgs{ data_type: Payload::RegisterRequest, data: Some(register), status: Some(status) });
+        let msg = Message::create(&mut builder, &MessageArgs{ data_type: Payload::RegisterRequest, data: Some(register), status_type: Status::OkStatus, status: Some(status) });
 
         builder.finish(msg, None);
         let msg = builder.finished_data().to_vec();
@@ -109,7 +107,10 @@ impl Connection {
             topic: Some(topic),
             event_time: Some(time),
         }).as_union_value();
-        let msg = Message::create(&mut builder, &MessageArgs{ data_type: Payload::Train, data: Some(train), status: None }).as_union_value();
+        
+        let status = OkStatus::create(&mut builder, &OkStatusArgs{}).as_union_value();
+        
+        let msg = Message::create(&mut builder, &MessageArgs{ data_type: Payload::Train, data: Some(train), status_type: Status::OkStatus, status: Some(status) }).as_union_value();
 
         builder.finish(msg, None);
         builder.finished_data().to_vec()

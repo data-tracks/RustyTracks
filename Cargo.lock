@@ -69,7 +69,7 @@ dependencies = [
 [[package]]
 name = "schemas"
 version = "0.0.1"
-source = "git+https://github.com/data-tracks/TrackRails.git?branch=generated#1c133a94f4b85069075e3a605265998c5263640d"
+source = "git+https://github.com/data-tracks/TrackRails.git?branch=generated#cd70521278212db21ecb304d40347a4bc5b0fdfe"
 dependencies = [
  "flatbuffers",
 ]
