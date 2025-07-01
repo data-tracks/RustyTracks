@@ -6,18 +6,14 @@ description = "Rust client to connect to DataTracks."
 homepage = "https://github.com/data-tracks/RustyTracks"
 repository = "https://github.com/data-tracks/RustyTracks"
 keywords = ["stream", "data", "processing"]
-license = "GPL-3"
+license = "GPL-3.0-only"
 edition = "2024"
 readme = "README.md"
 
 [lib]
 name = "rusty_track"
 
-[dependencies.schemas]
-git = "https://github.com/data-tracks/TrackRails.git"
-branch = "generated"
-version = "0.0.1"
-
 [dependencies]
 flatbuffers = "25.2.10"
 tracing = "0.1.41"
+track_rails = "0.0.1"
