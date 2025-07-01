@@ -1,0 +1,50 @@
+name: DataTracks Connection Tests
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Current Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Checkout Rust Application Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+          repository: 'data-tracks/DataTracks'
+          path: 'app'
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+
+      - name: Run DataTracks
+        run: |
+          cd app
+          cargo run --package data_tracks --bin data_tracks &
+      - name: Wait for API Url Action
+        uses: Hardsix/action-wait-for-api@v2.0.2
+        with:
+          url: "http://localhost:2666/status"
+          expected-response-field: "status"
+
+      - name: Build binaries in "${{ matrix.BUILD_TARGET }}" mode
+        run: cargo build --profile release
+      - name: Run tests in release mode
+        run: cargo test --profile release
