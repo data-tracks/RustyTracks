@@ -58,7 +58,7 @@ jobs:
       # Upload build artifacts for Linux x86_64 platform
       - name: Upload artifact (Linux)
         if: matrix.os == 'ubuntu-latest' && matrix.arch == 'x86_64'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: ubuntu-latest-heaven
           path: target/release/heaven
@@ -66,7 +66,7 @@ jobs:
       # Upload build artifacts for Linux aarch64 platform
       - name: Upload artifact (Linux aarch64)
         if: matrix.os == 'ubuntu-latest' && matrix.arch == 'aarch64'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: ubuntu-latest-heaven-aarch64
           path: target/release/heaven
@@ -74,7 +74,7 @@ jobs:
       # Upload build artifacts for macOS x86_64 platform
       - name: Upload artifact (macOS)
         if: matrix.os == 'macos-latest' && matrix.arch == 'x86_64'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: macos-latest-heaven
           path: target/release/heaven
@@ -82,7 +82,7 @@ jobs:
       # Upload build artifacts for macOS aarch64 platform
       - name: Upload artifact (macOS aarch64)
         if: matrix.os == 'macos-latest' && matrix.arch == 'aarch64'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: macos-latest-heaven-aarch64
           path: target/release/heaven
@@ -90,7 +90,7 @@ jobs:
       # Upload build artifacts for Windows x86_64 platform
       - name: Upload artifact (Windows)
         if: matrix.os == 'windows-latest' && matrix.arch == 'x86_64'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: windows-latest-heaven
           path: target/release/heaven.exe
@@ -98,7 +98,7 @@ jobs:
       # Upload build artifacts for Windows aarch64 platform
       - name: Upload artifact (Windows aarch64)
         if: matrix.os == 'windows-latest' && matrix.arch == 'aarch64'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: windows-latest-heaven-aarch64
           path: target/release/heaven.exe
