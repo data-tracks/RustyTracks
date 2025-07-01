@@ -1,4 +1,8 @@
 name: Publish.io
+on:
+  workflow_dispatch:
+  release:
+    types: [created]
 
 jobs:
   build:
