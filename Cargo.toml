@@ -1,6 +1,6 @@
 [package]
-name = "rusty_track"
-version = "0.0.1"
+name = "rusty-tracks"
+version = "0.0.2"
 authors = ["David Lengweiler <dave.lengw@gmail.com>"]
 description = "Rust client to connect to DataTracks."
 homepage = "https://github.com/data-tracks/RustyTracks"
@@ -11,7 +11,7 @@ edition = "2024"
 readme = "README.md"
 
 [lib]
-name = "rusty_track"
+name = "rusty-tracks"
 
 [dependencies]
 flatbuffers = "25.2.10"

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/RustyTrack.iml" filepath="$PROJECT_DIR$/.idea/RustyTrack.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/RustyTracks.iml" filepath="$PROJECT_DIR$/.idea/RustyTracks.iml" />
     </modules>
   </component>
 </project>

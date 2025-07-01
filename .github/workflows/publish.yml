@@ -1,4 +1,4 @@
-name: 📦 Publish to crate.io
+name: 📦 Publish to Crates.io
 on:
   workflow_run:
     workflows: ["📜 Protocol Release"]
