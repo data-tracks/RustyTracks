@@ -1,7 +1,14 @@
 [package]
 name = "RustyTrack"
-version = "0.1.0"
+version = "0.0.1"
+authors = ["David Lengweiler <dave.lengw@gmail.com>"]
+description = "Rust client to connect to DataTracks."
+homepage = "https://github.com/data-tracks/RustyTracks"
+repository = "https://github.com/data-tracks/RustyTracks"
+keywords = ["stream", "data", "processing"]
+license = "GPL-3"
 edition = "2024"
+readme = "README.md"
 
 [lib]
 name = "RustyTrack"
