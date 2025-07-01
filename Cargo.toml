@@ -16,6 +16,7 @@ name = "rusty_track"
 [dependencies.schemas]
 git = "https://github.com/data-tracks/TrackRails.git"
 branch = "generated"
+version = "0.0.1"
 
 [dependencies]
 flatbuffers = "25.2.10"
