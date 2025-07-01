@@ -1,8 +1,9 @@
-name: Publish.io
+name: 📦 Publish to crate.io
 on:
   workflow_dispatch:
-  release:
-    types: [created]
+  push:
+    branches:
+      - main
 
 jobs:
   build:
