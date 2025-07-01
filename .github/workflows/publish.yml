@@ -1,9 +1,9 @@
-name: 📦 Publish to crate.io
+name: 🧪 DataTracks Connection Tests
 on:
-  workflow_dispatch:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: ["📜 Protocol Release"]
+    types:
+      - completed
 
 jobs:
   build:
