@@ -59,9 +59,9 @@ impl Connection {
         let msg = builder.finished_data().to_vec();
 
 
-        let code = self.write_all(&msg).map_err(|e| e.to_string())?;
+        let code = self.write_all(&msg).map_err(|e| e.to_string());
         match code {
-            () => info!("Connected successfully"),
+            Ok(_) => info!("Connected successfully"),
             _ => error!("Error writing to stream"),
         }
 

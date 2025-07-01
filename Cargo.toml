@@ -1,5 +1,5 @@
 [package]
-name = "RustyTrack"
+name = "rusty_track"
 version = "0.0.1"
 authors = ["David Lengweiler <dave.lengw@gmail.com>"]
 description = "Rust client to connect to DataTracks."
@@ -11,7 +11,7 @@ edition = "2024"
 readme = "README.md"
 
 [lib]
-name = "RustyTrack"
+name = "rusty_track"
 
 [dependencies.schemas]
 git = "https://github.com/data-tracks/TrackRails.git"
