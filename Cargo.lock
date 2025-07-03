@@ -59,11 +59,11 @@ dependencies = [
 
 [[package]]
 name = "rusty-tracks"
-version = "0.0.1"
+version = "0.0.2"
 dependencies = [
  "flatbuffers",
  "tracing",
- "track_rails",
+ "track-rails",
 ]
 
 [[package]]
@@ -115,10 +115,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "track_rails"
+name = "track-rails"
 version = "0.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b16a372cdcb5820daa7673ffef073d5009a9930dd814421533ae7979ee50ecad"
+checksum = "e6e8e5ab156c62eab6b9fe52782f476f2697053244b24679881b395361882c75"
 dependencies = [
  "flatbuffers",
 ]

@@ -11,9 +11,9 @@ edition = "2024"
 readme = "README.md"
 
 [lib]
-name = "rusty-tracks"
+name = "rusty_tracks"
 
 [dependencies]
 flatbuffers = "25.2.10"
 tracing = "0.1.41"
-track_rails = "0.0.1"
+track-rails = "0.0.1"
