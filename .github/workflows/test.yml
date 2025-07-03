@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: true
-          token: ${{ secrets.TRACKVIEW }}
+
 
       - name: Checkout Rust Application Repository
         uses: actions/checkout@v4
@@ -26,6 +26,7 @@ jobs:
           submodules: 'true'
           repository: 'data-tracks/DataTracks'
           path: 'app'
+          token: ${{ secrets.TRACKVIEW }}
 
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
