@@ -36,7 +36,7 @@ jobs:
       - name: Run DataTracks
         run: |
           cd app
-          cargo run --package data_tracks --bin data_tracks &
+          cargo run --package data-tracks --bin data-tracks &
       - name: Wait for API Url Action
         uses: Hardsix/action-wait-for-api@v2.0.2
         with:
