@@ -1,6 +1,7 @@
 #[cfg(test)]
 mod tests{
     use crate::Client;
+    use crate::connection::Permission::Admin;
 
     #[test]
     fn test_connect(){
@@ -22,8 +23,15 @@ mod tests{
 
         for _ in 0..10{
             let value = connection.receive().unwrap();
-            println!("{}", value);
+            println!("{:?}", value);
         }
+    }
+
+    #[test]
+    fn test_admin() {
+        let client = Client::new("localhost", 5959);
+        let connection = client.connect().unwrap();
+        assert!(connection.has_permission(&Admin))
     }
     
 }

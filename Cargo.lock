@@ -116,9 +116,9 @@ dependencies = [
 
 [[package]]
 name = "track-rails"
-version = "0.0.1"
+version = "0.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e6e8e5ab156c62eab6b9fe52782f476f2697053244b24679881b395361882c75"
+checksum = "58834d6cd3c8ff00252aabd4a2047f85c0840f8213d97cdd1ef04607c51bfa73"
 dependencies = [
  "flatbuffers",
 ]
