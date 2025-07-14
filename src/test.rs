@@ -1,7 +1,6 @@
 #[cfg(test)]
 mod tests{
     use crate::Client;
-    use crate::connection::Permission::Admin;
 
     #[test]
     fn test_connect(){
@@ -31,11 +30,32 @@ mod tests{
     fn test_admin() {
         let client = Client::new("localhost", 5959);
         let connection = client.connect().unwrap();
-        assert!(connection.has_permission(&Admin));
+        assert!(connection.admin().is_ok());
 
         let client = Client::new("localhost", 8686);
         let connection = client.connect().unwrap();
-        assert!(!connection.has_permission(&Admin));
+        assert!(connection.admin().is_err());
+    }
+
+    #[test]
+    fn test_disconnect() {
+        let client = Client::new("localhost", 5959);
+        let connection = client.connect().unwrap();
+        drop(connection);
+
+        for _ in 0..10 {
+            let client = Client::new("localhost", 5959);
+            let connection = client.connect().unwrap();
+        }
+    }
+
+    #[test]
+    fn test_create_plan() {
+        let client = Client::new("localhost", 5959);
+        let connection = client.connect().unwrap();
+        let admin = connection.admin().unwrap();
+
+        let id = admin.create_plan("Test Plan", "0--1--2").unwrap();
     }
     
 }
