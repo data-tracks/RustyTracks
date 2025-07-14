@@ -75,6 +75,7 @@ impl Connection {
 
         let msg = self.read()?;
         println!("{:?}", msg);
+        self.permissions = msg.permissions;
         Ok(())
     }
 

@@ -4,7 +4,7 @@ use crate::connection::Permission;
 
 #[derive(Debug)]
 pub struct Message{
-    permissions: Vec<Permission>,
+    pub permissions: Vec<Permission>,
 }
 
 impl Message {

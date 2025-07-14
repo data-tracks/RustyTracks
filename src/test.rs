@@ -31,7 +31,11 @@ mod tests{
     fn test_admin() {
         let client = Client::new("localhost", 5959);
         let connection = client.connect().unwrap();
-        assert!(connection.has_permission(&Admin))
+        assert!(connection.has_permission(&Admin));
+
+        let client = Client::new("localhost", 8686);
+        let connection = client.connect().unwrap();
+        assert!(!connection.has_permission(&Admin));
     }
     
 }
