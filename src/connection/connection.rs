@@ -45,11 +45,11 @@ impl Connection {
         self.read()
     }
 
-    pub fn admin(&self) -> Result<Admin, String> {
+    pub fn admin(self) -> Result<Admin, String> {
         if !self.permissions.contains(&AdminPermission) {
             return Err(String::from("No admin permission"));
         }
-        Ok(Admin::new(&self))
+        Ok(Admin::new(self))
     }
 
     pub(crate) fn write_all<'a>(&'a mut self, msg: &'a [u8]) -> Result<(), String> {

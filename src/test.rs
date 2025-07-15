@@ -53,7 +53,7 @@ mod tests{
     fn test_create_plan() {
         let client = Client::new("localhost", 5959);
         let connection = client.connect().unwrap();
-        let admin = connection.admin().unwrap();
+        let mut admin = connection.admin().unwrap();
 
         let id = admin.create_plan("Test Plan", "0--1--2").unwrap();
     }
