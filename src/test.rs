@@ -77,5 +77,32 @@ mod tests{
         let _ = admin.create_plan("Test Plan", "0--1--2").unwrap();
         assert_eq!(admin.get_plans().unwrap().len(), amount + 1);
     }
+
+
+    #[test]
+    fn test_wordcount() {
+        let client = Client::new("localhost", 5959);
+        let connection = client.connect().unwrap();
+        let mut admin = connection.admin().unwrap();
+
+        let input_port = 6565;
+        let output_port = 6765;
+
+        let id = admin.create_plan(
+            "Word Count",
+            "\
+            0--1{sql|SELECT * FROM UNWIND(SELECT SPLIT($0, '\\s+') FROM $0)}--2\n\
+            \n\
+            In\n\
+            Tpc{\"url\":\"127.0.0.1\",\"port\":6565}:0\n\
+            Out\n\
+            Tpc{\"url\":\"127.0.0.1\",\"port\":6767}:2"
+        ).unwrap();
+
+        admin.start_plan(id).unwrap();
+
+        admin.stop_plan(id).unwrap();
+
+    }
     
 }

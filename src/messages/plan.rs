@@ -82,3 +82,38 @@ impl TryFrom<protocol::Plans<'_>> for Plans {
         Ok(Plans(plans))
     }
 }
+
+pub struct StartPlan {
+    already_running: bool,
+}
+
+impl TryFrom<Message<'_>> for StartPlan {
+    type Error = String;
+
+    fn try_from(msg: Message<'_>) -> Result<Self, Self::Error> {
+        match msg.data_type() {
+            Payload::StartPlanResponse => {
+                let already_running = msg.data_as_start_plan_response().ok_or(String::from("Did not contain start."))?.already_running();
+                Ok(StartPlan { already_running })
+            },
+            err => Err(String::from(format!("Wrong datatype {:?}", err)))
+        }
+    }
+}
+
+pub struct StopPlan {
+    already_stopped: bool
+}
+
+impl TryFrom<Message<'_>> for StopPlan {
+    type Error = String;
+    fn try_from(msg: Message<'_>) -> Result<Self, Self::Error> {
+        match msg.data_type() {
+            Payload::StopPlanResponse => {
+                let already_stopped = msg.data_as_stop_plan_response().ok_or(String::from("Did not contain start."))?.already_stopped();
+                Ok(StopPlan { already_stopped })
+            },
+            err => Err(String::from(format!("Wrong datatype {:?}", err)))
+        }
+    }
+}
