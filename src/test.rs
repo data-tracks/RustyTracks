@@ -57,5 +57,25 @@ mod tests{
 
         let id = admin.create_plan("Test Plan", "0--1--2").unwrap();
     }
+
+    #[test]
+    fn test_delete_plan() {
+        let client = Client::new("localhost", 5959);
+        let connection = client.connect().unwrap();
+        let mut admin = connection.admin().unwrap();
+        let id = admin.create_plan("Test Plan", "0--1--2").unwrap();
+        assert!(admin.delete_plan(id).is_ok())
+    }
+
+    #[test]
+    fn test_get_plans() {
+        let client = Client::new("localhost", 5959);
+        let connection = client.connect().unwrap();
+        let mut admin = connection.admin().unwrap();
+        let amount = admin.get_plans().unwrap().len();
+
+        let _ = admin.create_plan("Test Plan", "0--1--2").unwrap();
+        assert_eq!(admin.get_plans().unwrap().len(), amount + 1);
+    }
     
 }

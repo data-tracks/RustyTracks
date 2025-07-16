@@ -18,3 +18,67 @@ impl TryFrom<Message<'_>> for CreatePlan {
 
     }
 }
+
+pub struct DeletePlan{}
+impl TryFrom<Message<'_>>
+for DeletePlan {
+    type Error = String;
+    fn try_from(msg: Message) -> Result<Self, Self::Error> {
+        match msg.data_type() {
+            Payload::DeletePlanResponse => {
+                Ok(DeletePlan { })
+            }
+            e => Err(format!("Wrong datatype {:?}", e))
+        }
+    }
+}
+
+pub struct Plans (pub(crate) Vec<Plan>);
+
+
+pub struct Plan {
+    pub id: usize,
+}
+
+impl TryFrom<protocol::Plan<'_>> for Plan {
+    type Error = String;
+
+    fn try_from(initial: protocol::Plan) -> Result<Self, Self::Error> {
+        let id = initial.id() as usize;
+        Ok(Plan { id })
+    }
+}
+
+impl TryFrom<Message<'_>> for Plans {
+    type Error = String;
+
+    fn try_from(msg: Message<'_>) -> Result<Self, Self::Error> {
+        match msg.data_type() {
+            Payload::Catalog => {
+                msg.data_as_catalog().map(|c| {
+                    let plans = match c.plans() {
+                        Some(plans) => plans,
+                        None => return Err(String::from("Contains no plans.")),
+                    };
+                    match Plans::try_from(plans) {
+                        Ok(plan) => Ok(plan),
+                        Err(err) => return Err(err)
+                    }
+                }).ok_or(String::from("Plans is empty"))?
+            }
+            e => Err(format!("Wrong datatype {:?}", e))
+        }
+    }
+}
+
+impl TryFrom<protocol::Plans<'_>> for Plans {
+    type Error = String;
+
+    fn try_from(initial: protocol::Plans<'_>) -> Result<Self, Self::Error> {
+        let mut plans = vec![];
+        for plan in initial.plans() {
+            plans.push(Plan::try_from(plan)?)
+        }
+        Ok(Plans(plans))
+    }
+}

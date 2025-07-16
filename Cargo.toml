@@ -16,4 +16,4 @@ name = "rusty_tracks"
 [dependencies]
 flatbuffers = "25.2.10"
 tracing = "0.1.41"
-track-rails = "0.0.5"
+track-rails = "0.0.6"
