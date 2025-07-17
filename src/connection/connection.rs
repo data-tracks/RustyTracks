@@ -5,11 +5,12 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use flatbuffers::FlatBufferBuilder;
 use tracing::{error, info};
 use track_rails::message_generated::protocol;
-use track_rails::message_generated::protocol::{Disconnect, DisconnectArgs, MessageArgs, OkStatus, OkStatusArgs, Payload, RegisterRequest, RegisterRequestArgs, Status, Text, TextArgs, Time, TimeArgs, Train, TrainArgs, Value, ValueWrapper, ValueWrapperArgs};
+use track_rails::message_generated::protocol::{Disconnect, DisconnectArgs, MessageArgs, OkStatus, OkStatusArgs, Payload, RegisterRequest, RegisterRequestArgs, Status, Text, TextArgs, Time, TimeArgs, Train, TrainArgs, Value as ProtoValue, ValueWrapper, ValueWrapperArgs};
 use crate::connection::Permission::AdminPermission;
 use crate::connection::permission::Permission;
 use crate::messages;
 use crate::messages::Message;
+use crate::value::Value;
 
 pub struct Connection {
     id: Option<usize>,
@@ -36,8 +37,8 @@ impl Connection {
     }
 
 
-    pub(crate) fn send(&mut self, msg: &str) -> Result<(), String> {
-        let msg = self.msg(msg);
+    pub(crate) fn send<V:Into<Value>>(&mut self, msg: V) -> Result<(), String> {
+        let msg = self.wrap_send(msg.into());
         self.write_all(&msg)
     }
 
@@ -100,7 +101,7 @@ impl Connection {
         Msg::try_from(msg)
     }
 
-    pub(crate) fn msg(&mut self, msg: &str) -> Vec<u8> {
+    pub(crate) fn wrap_send(&mut self, msg: Value) -> Vec<u8> {
         let mut builder = FlatBufferBuilder::new();
 
         let millis = SystemTime::now()
@@ -110,12 +111,8 @@ impl Connection {
         let time = Time::create(&mut builder, &TimeArgs{data: millis as u64 as i64 });
 
         let topic = builder.create_string("");
-
-        let value = builder.create_string(msg );
-        let value = Text::create(&mut builder, &TextArgs{ data: Some(value) }).as_union_value();
-
-
-        let value = ValueWrapper::create(&mut builder, &ValueWrapperArgs{ data_type: Value::Text, data: Some(value)});
+        
+        let value = msg.flatternize(&mut builder);
 
         let values = builder.create_vector(&[value]);
 

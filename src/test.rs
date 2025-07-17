@@ -78,6 +78,18 @@ mod tests{
         assert_eq!(admin.get_plans().unwrap().len(), amount + 1);
     }
 
+    #[test]
+    fn test_plan_start_stop() {
+        let client = Client::new("localhost", 5959);
+        let connection = client.connect().unwrap();
+        let mut admin = connection.admin().unwrap();
+        let id = admin.create_plan("Test Plan", "0--1--2").unwrap();
+
+        admin.start_plan(id).unwrap();
+        admin.stop_plan(id).unwrap();
+
+    }
+
 
     #[test]
     fn test_wordcount() {
@@ -101,7 +113,14 @@ mod tests{
 
         admin.start_plan(id).unwrap();
 
-        admin.stop_plan(id).unwrap();
+        let client = Client::new("localhost", input_port);
+        let mut connection = client.connect().unwrap();
+
+
+        for _ in 0..1_000_000 {
+            connection.send("This is a test sentence.").unwrap();
+        }
+        admin.delete_plan(id).unwrap();
 
     }
     
