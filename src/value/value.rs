@@ -2,6 +2,7 @@ use flatbuffers::{FlatBufferBuilder, WIPOffset};
 use track_rails::message_generated::protocol;
 use track_rails::message_generated::protocol::{Bool, BoolArgs, Float, FloatArgs, Integer, IntegerArgs, Null, NullArgs, Text, TextArgs, ValueWrapper, ValueWrapperArgs};
 
+#[derive(Debug)]
 pub enum Value {
     Text(String),
     Number(i64),
@@ -35,7 +36,7 @@ impl Value{
                 ValueWrapper::create(builder, &ValueWrapperArgs{ data_type: protocol::Value::Null, data: Some(null) })
             }
         }
-        
+
     }
 }
 
@@ -45,7 +46,7 @@ impl From<i64> for Value {
     }
 }
 
-impl From<f64> for Value {  
+impl From<f64> for Value {
     fn from(value: f64) -> Self {
         Value::Float(value)
     }
@@ -66,5 +67,32 @@ impl From<String> for Value {
 impl From<&str> for Value {
     fn from(value: &str) -> Self {
         Value::Text(value.to_string())
+    }
+}
+
+impl<'a> From<ValueWrapper<'a>> for Value {
+    fn from(value: ValueWrapper<'a>) -> Self {
+        match value.data_type() {
+            protocol::Value::Integer => {
+                let int = value.data_as_integer().unwrap();
+                Value::Number(int.data() as i64)
+            }
+            protocol::Value::Float => {
+                let float = value.data_as_float().unwrap();
+                Value::Float(float.data() as f64)
+            }
+            protocol::Value::Bool => {
+                let bool = value.data_as_bool().unwrap();
+                Value::Bool(bool.data())
+            }
+            protocol::Value::Text => {
+                let text = value.data_as_text().unwrap();
+                Value::Text(text.data().to_string())
+            }
+            protocol::Value::Null => {
+                Value::Null
+            },
+            _ => todo!()
+        }
     }
 }

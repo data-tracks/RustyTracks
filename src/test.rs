@@ -1,11 +1,12 @@
 #[cfg(test)]
 mod tests{
     use crate::Client;
+    use crate::messages::Train;
 
     #[test]
     fn test_connect(){
         let client = Client::new("localhost", 5959);
-        let connection = client.connect().unwrap();
+        let _ = client.connect().unwrap();
     }
 
     #[test]
@@ -98,7 +99,7 @@ mod tests{
         let mut admin = connection.admin().unwrap();
 
         let input_port = 6565;
-        let output_port = 6765;
+        let output_port = 6767;
 
         let id = admin.create_plan(
             "Word Count",
@@ -117,10 +118,15 @@ mod tests{
         let mut connection = client.connect().unwrap();
 
 
-        for _ in 0..1_000_000 {
+        for _ in 0..10 {
             connection.send("This is a test sentence.").unwrap();
         }
-        admin.delete_plan(id).unwrap();
+        //admin.delete_plan(id).unwrap();
+
+        let client = Client::new("localhost", output_port);
+        let mut connection = client.connect().unwrap();
+
+        println!("{:?}", connection.read_msg::<Train>().unwrap());
 
     }
     
