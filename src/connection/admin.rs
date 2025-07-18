@@ -34,7 +34,7 @@ impl Admin {
 
         self.write_all(&msg)?;
 
-        let _: StartPlan = self.read()?;
+        let _: StartPlan = self.read_msg()?;
         Ok(())
     }
 
@@ -57,7 +57,7 @@ impl Admin {
 
         self.write_all(&msg)?;
 
-        let _: StopPlan = self.read()?;
+        let _: StopPlan = self.read_msg()?;
         Ok(())
     }
 
@@ -83,7 +83,7 @@ impl Admin {
 
         self.write_all(msg)?;
 
-        let res: CreatePlan = self.read()?;
+        let res: CreatePlan = self.read_msg()?;
 
         Ok(res.id)
     }
@@ -118,7 +118,7 @@ impl Admin {
         self.write_all(&msg)?;
 
         // wait response
-        let res: Plans = self.read()?;
+        let res: Plans = self.read_msg()?;
 
         Ok(res.0)
 
@@ -141,7 +141,7 @@ impl Admin {
         self.write_all(&msg)?;
 
         // wait for response
-        let _: DeletePlan = self.read()?;
+        let _: DeletePlan = self.read_msg()?;
 
         Ok(())
     }
