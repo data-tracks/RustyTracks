@@ -1,6 +1,6 @@
 [package]
 name = "rusty-tracks"
-version = "0.0.1"
+version = "0.0.7"
 authors = ["David Lengweiler <dave.lengw@gmail.com>"]
 description = "Rust client to connect to DataTracks."
 homepage = "https://github.com/data-tracks/RustyTracks"

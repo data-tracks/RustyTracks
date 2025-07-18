@@ -59,7 +59,7 @@ dependencies = [
 
 [[package]]
 name = "rusty-tracks"
-version = "0.0.1"
+version = "0.0.7"
 dependencies = [
  "flatbuffers",
  "tracing",
