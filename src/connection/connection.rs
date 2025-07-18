@@ -3,7 +3,7 @@ use std::io::{Read, Write};
 use std::net::TcpStream;
 use std::time::{SystemTime, UNIX_EPOCH};
 use flatbuffers::FlatBufferBuilder;
-use tracing::{error, info};
+use tracing::{debug, error, info};
 use track_rails::message_generated::protocol;
 use track_rails::message_generated::protocol::{Disconnect, DisconnectArgs, MessageArgs, OkStatus, OkStatusArgs, Payload, RegisterRequest, RegisterRequestArgs, Status, Text, TextArgs, Time, TimeArgs, Train, TrainArgs, Value as ProtoValue, ValueWrapper, ValueWrapperArgs};
 use crate::connection::Permission::AdminPermission;
@@ -57,7 +57,7 @@ impl Connection {
         let length: [u8; 4] = (msg.len() as u32).to_be_bytes();
         // we write length first
         self.stream.write_all(&length).map_err(|e| e.to_string())?;
-        println!("sending {} bytes", msg.len());
+        debug!("sending {} bytes", msg.len());
         // then msg
         self.stream.write_all(msg).map_err(|e| e.to_string())?;
         Ok(())
@@ -83,12 +83,12 @@ impl Connection {
 
 
         let msg: messages::RegisterResponse = self.read_msg()?;
-        println!("{:?}", msg);
+        debug!("{:?}", msg);
         self.permissions = msg.permissions;
         Ok(())
     }
 
-    pub fn read_msg<Msg>(&mut self) -> Result<Msg, String> where 
+    pub fn read_msg<Msg>(&mut self) -> Result<Msg, String> where
         Msg: for<'a> TryFrom<protocol::Message<'a>, Error = String> {
         let mut buf = [0u8; 4];
         self.stream.read_exact(&mut buf).map_err(|e| e.to_string())?;
@@ -111,7 +111,7 @@ impl Connection {
         let time = Time::create(&mut builder, &TimeArgs{data: millis as u64 as i64 });
 
         let topic = builder.create_string("");
-        
+
         let value = msg.flatternize(&mut builder);
 
         let values = builder.create_vector(&[value]);
@@ -144,7 +144,7 @@ impl Drop for Connection {
 
         builder.finish(message, None);
         let msg = builder.finished_data().to_vec();
-        println!("disconnecting");
+        debug!("disconnecting");
         self.write_all(&msg).unwrap()
     }
 }
