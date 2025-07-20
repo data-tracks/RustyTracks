@@ -38,12 +38,12 @@ impl Connection {
 
 
     pub fn send<V:Into<Value>>(&mut self, msg: V) -> Result<(), String> {
-        let msg = self.wrap_send(msg.into());
+        let msg = self.wrap(msg.into());
         self.write_all(&msg)
     }
 
-    pub fn receive(&mut self) -> Result<Message, String> {
-        self.read_msg()
+    pub fn receive_msg(&mut self) -> Result<Message, String> {
+        self.receive()
     }
 
     pub fn admin(self) -> Result<Admin, String> {
@@ -82,13 +82,13 @@ impl Connection {
         }
 
 
-        let msg: messages::RegisterResponse = self.read_msg()?;
+        let msg: messages::RegisterResponse = self.receive()?;
         debug!("{:?}", msg);
         self.permissions = msg.permissions;
         Ok(())
     }
 
-    pub fn read_msg<Msg>(&mut self) -> Result<Msg, String> where
+    pub fn receive<Msg>(&mut self) -> Result<Msg, String> where
         Msg: for<'a> TryFrom<protocol::Message<'a>, Error = String> {
         let mut buf = [0u8; 4];
         self.stream.read_exact(&mut buf).map_err(|e| e.to_string())?;
@@ -101,7 +101,7 @@ impl Connection {
         Msg::try_from(msg)
     }
 
-    pub(crate) fn wrap_send(&mut self, msg: Value) -> Vec<u8> {
+    pub(crate) fn wrap(&mut self, msg: Value) -> Vec<u8> {
         let mut builder = FlatBufferBuilder::new();
 
         let millis = SystemTime::now()

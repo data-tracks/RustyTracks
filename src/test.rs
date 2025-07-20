@@ -22,7 +22,7 @@ mod tests{
         let mut connection = client.connect().unwrap();
 
         for _ in 0..10{
-            let value = connection.receive().unwrap();
+            let value = connection.receive_msg().unwrap();
             println!("{:?}", value);
         }
     }
@@ -126,7 +126,7 @@ mod tests{
         let client = Client::new("localhost", output_port);
         let mut connection = client.connect().unwrap();
 
-        println!("{:?}", connection.read_msg::<Train>().unwrap());
+        println!("{:?}", connection.receive::<Train>().unwrap());
 
     }
     

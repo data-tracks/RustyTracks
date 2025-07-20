@@ -6,6 +6,7 @@ mod value;
 pub use connection::Client;
 pub use connection::Connection;
 pub use connection::Permission;
+pub use messages::*;
 
 
 
