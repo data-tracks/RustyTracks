@@ -96,7 +96,7 @@ impl TryFrom<Message<'_>> for StartPlan {
                 let already_running = msg.data_as_start_plan_response().ok_or(String::from("Did not contain start."))?.already_running();
                 Ok(StartPlan { already_running })
             },
-            err => Err(String::from(format!("Wrong datatype {:?}", err)))
+            err => Err(format!("Wrong datatype {:?}", err))
         }
     }
 }
@@ -113,7 +113,7 @@ impl TryFrom<Message<'_>> for StopPlan {
                 let already_stopped = msg.data_as_stop_plan_response().ok_or(String::from("Did not contain start."))?.already_stopped();
                 Ok(StopPlan { already_stopped })
             },
-            err => Err(String::from(format!("Wrong datatype {:?}", err)))
+            err => Err(format!("Wrong datatype {:?}", err))
         }
     }
 }

@@ -20,7 +20,7 @@ impl Admin {
 
         let start = StartPlanRequest::create(&mut builder, &StartPlanRequestArgs{ id: id as u64 });
 
-        let msg = Self::wrap_msg(&mut builder, Payload::StopPlanRequest, start.as_union_value());
+        let msg = Self::wrap_msg(&mut builder, Payload::StartPlanRequest, start.as_union_value());
 
         self.write_all(&msg)?;
 
