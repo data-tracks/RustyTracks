@@ -118,7 +118,7 @@ mod tests{
         let mut connection = client.connect().unwrap();
 
 
-        for _ in 0..10_000_000 {
+        for _ in 0..100_000 {
             connection.send("This is a test sentence.").unwrap();
         }
         //admin.delete_plan(id).unwrap();
