@@ -136,15 +136,19 @@ impl Drop for Connection {
     fn drop(&mut self) {
         let mut builder = FlatBufferBuilder::new();
 
-        let diconnect = Disconnect::create(&mut builder, &DisconnectArgs { id: self.id.unwrap_or_default() as u64 }).as_union_value();
+        let disconnect = Disconnect::create(&mut builder, &DisconnectArgs { id: self.id.unwrap_or_default() as u64 }).as_union_value();
 
         let status = OkStatus::create(&mut builder, &OkStatusArgs{}).as_union_value();
 
-        let message = protocol::Message::create(&mut builder, &MessageArgs{data_type: Payload::Disconnect, data: Some(diconnect), status_type: Status::OkStatus, status: Some(status) }).as_union_value();
+        let message = protocol::Message::create(&mut builder, &MessageArgs{data_type: Payload::Disconnect, data: Some(disconnect), status_type: Status::OkStatus, status: Some(status) }).as_union_value();
 
         builder.finish(message, None);
         let msg = builder.finished_data().to_vec();
         debug!("disconnecting");
-        self.write_all(&msg).unwrap()
+        match self.write_all(&msg) {
+            Ok(_) => {}
+            // we should be okay to ignore here
+            Err(err) => error!("{}", err),
+        }
     }
 }

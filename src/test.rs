@@ -121,7 +121,6 @@ mod tests{
         for _ in 0..100_000 {
             connection.send("This is a test sentence.").unwrap();
         }
-        //admin.delete_plan(id).unwrap();
 
         let client = Client::new("localhost", output_port);
         let mut connection = client.connect().unwrap();
